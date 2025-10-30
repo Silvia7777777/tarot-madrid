@@ -105,6 +105,7 @@ export default {
       fontFamily: {
         display: ["Playfair Display", "serif"],
         body: ["Inter", "sans-serif"],
+        hero: ["Marcellus", "serif"],
       },
     },
   },

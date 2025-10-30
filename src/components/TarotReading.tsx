@@ -4,22 +4,33 @@ import { Heart, DollarSign, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import tarotCardBack from "@/assets/tarot-card-back.png";
+import legacySun from "@/assets/legacy-sun.png";
+import legacyMoon from "@/assets/legacy-moon.png";
+import legacyMagician from "@/assets/legacy-magician.png";
+import legacyJustice from "@/assets/legacy-justice.png";
+import legacyLovers from "@/assets/legacy-lovers.png";
+import legacyStar from "@/assets/legacy-star.png";
+import legacyTower from "@/assets/legacy-tower.png";
+import legacyStrength from "@/assets/legacy-strength.png";
+import legacyWheel from "@/assets/legacy-wheel.png";
 
 interface TarotCard {
   id: string;
   name: string;
   interpretation: string;
-  emoji: string;
+  imageUrl: string;
 }
 
 const tarotDeck: TarotCard[] = [
-  { id: "sun", name: "El Sol", interpretation: "Claridad y éxito iluminan tu camino. Se abren nuevas oportunidades.", emoji: "🌞" },
-  { id: "moon", name: "La Luna", interpretation: "Tu intuición despierta. Escucha los mensajes del inconsciente.", emoji: "🌙" },
-  { id: "magician", name: "El Mago", interpretation: "Tu poder interior crea realidades. Actúa con intención.", emoji: "💫" },
-  { id: "justice", name: "La Justicia", interpretation: "Equilibrio y verdad llegan a tu vida. Lo justo prevalece.", emoji: "⚖️" },
-  { id: "lovers", name: "Los Enamorados", interpretation: "Una decisión del corazón marcará tu destino.", emoji: "❤️" },
-  { id: "star", name: "La Estrella", interpretation: "Esperanza renovada. Confía en que el universo conspira a tu favor.", emoji: "🌿" },
-  { id: "tower", name: "La Torre", interpretation: "Transformación inevitable. Lo viejo se derrumba para dar paso a lo nuevo.", emoji: "🔥" },
+  { id: "sun", name: "El Sol", interpretation: "Claridad y éxito iluminan tu camino. Se abren nuevas oportunidades.", imageUrl: legacySun },
+  { id: "moon", name: "La Luna", interpretation: "Tu intuición despierta. Escucha los mensajes del inconsciente.", imageUrl: legacyMoon },
+  { id: "magician", name: "El Mago", interpretation: "Tu poder interior crea realidades. Actúa con intención.", imageUrl: legacyMagician },
+  { id: "justice", name: "La Justicia", interpretation: "Equilibrio y verdad llegan a tu vida. Lo justo prevalece.", imageUrl: legacyJustice },
+  { id: "lovers", name: "Los Enamorados", interpretation: "Una decisión del corazón marcará tu destino.", imageUrl: legacyLovers },
+  { id: "star", name: "La Estrella", interpretation: "Esperanza renovada. Confía en que el universo conspira a tu favor.", imageUrl: legacyStar },
+  { id: "tower", name: "La Torre", interpretation: "Transformación inevitable. Lo viejo se derrumba para dar paso a lo nuevo.", imageUrl: legacyTower },
+  { id: "strength", name: "La Fuerza", interpretation: "Tu fortaleza interior te guía. La compasión es tu mayor poder.", imageUrl: legacyStrength },
+  { id: "wheel", name: "La Rueda de la Fortuna", interpretation: "Los ciclos giran a tu favor. Acepta el cambio con gratitud.", imageUrl: legacyWheel },
 ];
 
 const TarotReading = () => {
@@ -166,8 +177,15 @@ const TarotReading = () => {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-accent to-secondary flex items-center justify-center text-6xl animate-glow">
-                              {revealedCards[selectedCards.indexOf(i)]?.emoji}
+                            <div className="w-full h-full bg-gradient-to-br from-background to-background/50 flex items-center justify-center p-1 animate-glow">
+                              <img
+                                src={revealedCards[selectedCards.indexOf(i)]?.imageUrl}
+                                alt={revealedCards[selectedCards.indexOf(i)]?.name}
+                                className="w-full h-full object-cover rounded-md"
+                                style={{
+                                  boxShadow: "0 0 30px rgba(255, 215, 128, 0.5)",
+                                }}
+                              />
                             </div>
                           )}
                         </div>
@@ -193,9 +211,18 @@ const TarotReading = () => {
                           transition={{ delay: i * 0.2 }}
                         >
                           <Card className="p-6 bg-card/50 backdrop-blur border-accent/20">
-                            <div className="flex items-start gap-4">
-                              <div className="text-4xl">{card.emoji}</div>
-                              <div>
+                            <div className="flex items-start gap-6">
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={card.imageUrl}
+                                  alt={card.name}
+                                  className="w-24 h-36 object-cover rounded-lg shadow-lg"
+                                  style={{
+                                    boxShadow: "0 0 20px rgba(255, 215, 128, 0.4)",
+                                  }}
+                                />
+                              </div>
+                              <div className="flex-1">
                                 <h4 className="font-display text-xl font-bold text-secondary mb-2">
                                   {card.name}
                                 </h4>
