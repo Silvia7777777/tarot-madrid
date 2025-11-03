@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Mail, User, Sparkles } from "lucide-react";
+import { Mail, User, Sparkles, Clock, CheckCircle } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import SaturdayTimePicker from "@/components/SaturdayTimePicker";
 
 const BookingForm = () => {
   const { toast } = useToast();
@@ -14,31 +16,75 @@ const BookingForm = () => {
     name: "",
     email: "",
     sessionType: "",
-    preferredDate: "",
+    selectedDate: null as Date | null,
+    selectedTime: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Basic validation
-    if (!formData.name || !formData.email || !formData.sessionType || !formData.preferredDate) {
+    if (!formData.name || !formData.email) {
       toast({
         title: "Campos requeridos",
-        description: "Por favor completa todos los campos",
+        description: "Por favor completa tu nombre y email",
         variant: "destructive",
       });
       return;
     }
 
+    if (!formData.sessionType) {
+      toast({
+        title: "Selecciona una sesión",
+        description: "Elige el tipo de lectura que deseas",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.selectedDate || !formData.selectedTime) {
+      toast({
+        title: "Fecha requerida",
+        description: "Por favor selecciona un sábado y una hora disponible",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const appointmentDateTime = `${format(formData.selectedDate, "EEEE d 'de' MMMM", { locale: es })} a las ${formData.selectedTime}`;
+
     // Here you would integrate with Stripe
     toast({
       title: "¡Reserva recibida! ✨",
-      description: "Te contactaremos pronto para confirmar tu sesión",
+      description: `Te contactaremos pronto para confirmar tu sesión del ${appointmentDateTime}`,
     });
 
     // Reset form
-    setFormData({ name: "", email: "", sessionType: "", preferredDate: "" });
+    setFormData({ 
+      name: "", 
+      email: "", 
+      sessionType: "", 
+      selectedDate: null, 
+      selectedTime: "" 
+    });
   };
+
+  const sessionOptions = [
+    {
+      id: "30-min",
+      title: "30 Minutos",
+      description: "Lectura enfocada",
+      price: "40€",
+      icon: Clock,
+    },
+    {
+      id: "50-min",
+      title: "50 Minutos",
+      description: "Lectura profunda",
+      price: "50€",
+      icon: Clock,
+    },
+  ];
 
   return (
     <section id="booking" className="py-20 px-4 relative overflow-hidden">
@@ -99,40 +145,59 @@ const BookingForm = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="sessionType" className="text-secondary font-body">
+              <div className="space-y-3">
+                <Label className="text-secondary font-body text-base">
                   Tipo de sesión
                 </Label>
-                <Select
-                  value={formData.sessionType}
-                  onValueChange={(value) => setFormData({ ...formData, sessionType: value })}
-                >
-                  <SelectTrigger className="bg-background/50 border-border/50">
-                    <SelectValue placeholder="Selecciona una opción" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1-card">Lectura 1 Carta - €20</SelectItem>
-                    <SelectItem value="3-cards">Lectura 3 Cartas - €45</SelectItem>
-                    <SelectItem value="full-reading">Lectura Completa - €85</SelectItem>
-                    <SelectItem value="healing">Sanación Energética - €100</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {sessionOptions.map((session) => (
+                    <motion.div
+                      key={session.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`p-6 border-2 rounded-lg cursor-pointer transition-all ${
+                        formData.sessionType === session.id
+                          ? "border-accent bg-accent/10 shadow-[var(--glow-gold)]"
+                          : "border-border/50 hover:border-accent/50 hover:bg-accent/5"
+                      }`}
+                      onClick={() => setFormData({ ...formData, sessionType: session.id })}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <session.icon className="w-10 h-10 text-accent mb-3" />
+                          <h3 className="text-xl font-semibold text-secondary mb-1">
+                            {session.title}
+                          </h3>
+                          <p className="text-muted-foreground text-sm font-body">
+                            {session.description}
+                          </p>
+                        </div>
+                        <div className="text-right ml-4">
+                          <p className="text-3xl font-bold text-accent mb-2">
+                            {session.price}
+                          </p>
+                          {formData.sessionType === session.id && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 200 }}
+                            >
+                              <CheckCircle className="w-6 h-6 text-accent" />
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="date" className="text-secondary font-body">
-                  <Calendar className="inline w-4 h-4 mr-2" />
-                  Fecha preferida
-                </Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={formData.preferredDate}
-                  onChange={(e) => setFormData({ ...formData, preferredDate: e.target.value })}
-                  className="bg-background/50 border-border/50 focus:border-accent transition-colors"
-                  min={new Date().toISOString().split("T")[0]}
-                />
-              </div>
+              <SaturdayTimePicker
+                selectedDate={formData.selectedDate}
+                selectedTime={formData.selectedTime}
+                onDateChange={(date) => setFormData({ ...formData, selectedDate: date || null })}
+                onTimeChange={(time) => setFormData({ ...formData, selectedTime: time })}
+              />
 
               <Button
                 type="submit"
