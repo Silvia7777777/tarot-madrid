@@ -11,7 +11,7 @@ const Index = () => {
     <div className="min-h-screen bg-background font-body overflow-x-hidden" style={{ cursor: 'none' }}>
       <CustomCursor />
       <Hero />
-      <FloatingCardsDecor />
+      <FloatingCardsDecor variant="static" size="small" spacing="none" showEmpress={true} />
       <TarotReading />
       <About />
       <BookingForm />

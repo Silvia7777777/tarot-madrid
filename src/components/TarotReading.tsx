@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, DollarSign, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import FloatingCardsDecor from "@/components/FloatingCardsDecor";
 import tarotCardBack from "@/assets/tarot-card-back.png";
 import legacySun from "@/assets/legacy-sun.png";
 import legacyMoon from "@/assets/legacy-moon.png";
@@ -113,22 +114,94 @@ const TarotReading = () => {
                 className="p-8 cursor-pointer hover:shadow-[var(--glow-purple)] transition-all duration-300 hover:scale-105 bg-card/50 backdrop-blur border-border/50"
                 onClick={() => handleThemeSelect("love")}
               >
-                <Heart className="w-16 h-16 mx-auto mb-4 text-secondary animate-float" />
+                <div className="relative mx-auto mb-4 w-16 h-16">
+                  <Heart className="w-16 h-16 text-secondary relative z-10" />
+                  <motion.div
+                    className="absolute inset-0"
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.3, 0.7, 0.3],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Sparkles className="w-16 h-16 text-purple-500 absolute" />
+                  </motion.div>
+                  <motion.div
+                    className="absolute inset-0 rounded-full blur-xl"
+                    animate={{
+                      boxShadow: [
+                        "0 0 20px rgba(168, 85, 247, 0.3)",
+                        "0 0 40px rgba(168, 85, 247, 0.6)",
+                        "0 0 20px rgba(168, 85, 247, 0.3)",
+                      ],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                    }}
+                  />
+                </div>
                 <h3 className="font-display text-2xl font-bold text-secondary mb-2">Amor 💕</h3>
-                <p className="text-muted-foreground font-body">
+                <p className="text-muted-foreground font-body mb-4">
                   Descubre los secretos de tu corazón y las energías del amor
                 </p>
+                <FloatingCardsDecor variant="love" size="small" spacing="none" />
               </Card>
 
               <Card
                 className="p-8 cursor-pointer hover:shadow-[var(--glow-gold)] transition-all duration-300 hover:scale-105 bg-card/50 backdrop-blur border-border/50"
                 onClick={() => handleThemeSelect("money")}
               >
-                <DollarSign className="w-16 h-16 mx-auto mb-4 text-accent animate-float" />
+                <div className="relative mx-auto mb-4 w-16 h-16">
+                  <DollarSign className="w-16 h-16 text-accent relative z-10" />
+                  {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute top-1/2 left-1/2"
+                      style={{
+                        transform: `rotate(${angle}deg) translateY(-30px)`,
+                      }}
+                      animate={{
+                        scale: [0.5, 1, 0.5],
+                        opacity: [0.4, 1, 0.4],
+                      }}
+                      transition={{
+                        duration: 2,
+                        delay: i * 0.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <div 
+                        className="w-2 h-2 bg-yellow-400 rotate-45" 
+                        style={{ boxShadow: "0 0 10px rgba(255, 215, 0, 0.8)" }} 
+                      />
+                    </motion.div>
+                  ))}
+                  <motion.div
+                    className="absolute inset-0 rounded-full blur-xl"
+                    animate={{
+                      boxShadow: [
+                        "0 0 20px rgba(255, 215, 0, 0.3)",
+                        "0 0 40px rgba(255, 215, 0, 0.6)",
+                        "0 0 20px rgba(255, 215, 0, 0.3)",
+                      ],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                    }}
+                  />
+                </div>
                 <h3 className="font-display text-2xl font-bold text-accent mb-2">Dinero 💰</h3>
-                <p className="text-muted-foreground font-body">
+                <p className="text-muted-foreground font-body mb-4">
                   Explora las oportunidades y el flujo de la abundancia
                 </p>
+                <FloatingCardsDecor variant="money" size="small" spacing="none" />
               </Card>
             </motion.div>
           ) : (
