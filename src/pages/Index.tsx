@@ -1,5 +1,6 @@
 import CustomCursor from "@/components/CustomCursor";
 import Hero from "@/components/Hero";
+import FloatingCardsDecor from "@/components/FloatingCardsDecor";
 import TarotReading from "@/components/TarotReading";
 import About from "@/components/About";
 import BookingForm from "@/components/BookingForm";
@@ -10,6 +11,7 @@ const Index = () => {
     <div className="min-h-screen bg-background font-body overflow-x-hidden" style={{ cursor: 'none' }}>
       <CustomCursor />
       <Hero />
+      <FloatingCardsDecor />
       <TarotReading />
       <About />
       <BookingForm />

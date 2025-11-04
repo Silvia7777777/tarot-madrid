@@ -39,6 +39,7 @@ const TarotReading = () => {
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [revealedCards, setRevealedCards] = useState<TarotCard[]>([]);
   const [showResult, setShowResult] = useState(false);
+  const [preselectedCards, setPreselectedCards] = useState<TarotCard[]>([]);
 
   const handleThemeSelect = (theme: "love" | "money") => {
     setSelectedTheme(theme);
@@ -46,6 +47,11 @@ const TarotReading = () => {
     setSelectedCards([]);
     setRevealedCards([]);
     setShowResult(false);
+
+    // Barajar el mazo y seleccionar 3 cartas únicas
+    const shuffled = [...tarotDeck].sort(() => Math.random() - 0.5);
+    const threeCards = shuffled.slice(0, 3);
+    setPreselectedCards(threeCards);
 
     setTimeout(() => {
       setIsShuffling(false);
@@ -58,9 +64,9 @@ const TarotReading = () => {
     const newSelected = [...selectedCards, index];
     setSelectedCards(newSelected);
 
-    // Reveal card
-    const randomCard = tarotDeck[Math.floor(Math.random() * tarotDeck.length)];
-    setRevealedCards([...revealedCards, randomCard]);
+    // Revelar la carta correspondiente del array preseleccionado
+    const cardToReveal = preselectedCards[newSelected.length - 1];
+    setRevealedCards([...revealedCards, cardToReveal]);
 
     if (newSelected.length === 3) {
       setTimeout(() => setShowResult(true), 1000);
@@ -72,6 +78,7 @@ const TarotReading = () => {
     setSelectedCards([]);
     setRevealedCards([]);
     setShowResult(false);
+    setPreselectedCards([]);
   };
 
   return (

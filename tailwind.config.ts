@@ -103,9 +103,9 @@ export default {
         "sparkle": "sparkle 1s ease-in-out",
       },
       fontFamily: {
-        display: ["Playfair Display", "serif"],
-        body: ["Inter", "sans-serif"],
-        hero: ["Marcellus", "serif"],
+        display: ["Cinzel", "serif"],
+        body: ["Crimson Text", "Georgia", "serif"],
+        hero: ["Cinzel", "serif"],
       },
     },
   },
