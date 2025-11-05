@@ -130,4 +130,18 @@ All colors MUST be HSL.
     animation: shimmer 3s linear infinite;
     background-size: 200% auto;
   }
+  
+  .animate-twinkle {
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+  }
+  
+  .mystic-glow {
+    filter: drop-shadow(0 0 10px rgba(255, 215, 128, 0.5)) 
+            drop-shadow(0 0 20px rgba(168, 85, 247, 0.3));
+  }
 }

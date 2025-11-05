@@ -6,7 +6,7 @@ import legacyEmpress from "@/assets/legacy-empress.png";
 
 interface FloatingCardsDecorProps {
   variant?: "default" | "love" | "money" | "static";
-  size?: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large" | "xlarge";
   spacing?: "none" | "normal";
   showEmpress?: boolean;
 }
@@ -21,7 +21,8 @@ const FloatingCardsDecor = ({
   const sizeClasses = {
     small: "w-8 h-14",
     medium: "w-12 h-20 md:w-16 md:h-28 lg:w-20 lg:h-32",
-    large: "w-16 h-28"
+    large: "w-16 h-28",
+    xlarge: "w-20 h-32 md:w-24 md:h-40 lg:w-28 lg:h-44"
   };
 
   const gapClasses = {
@@ -99,40 +100,100 @@ const FloatingCardsDecor = ({
             }}
             className="relative"
           >
-            <motion.div
-              animate={isStatic ? {} : {
-                y: [0, -8, 0],
-                rotate: [0, index === 1 ? 1 : index === 0 ? -1 : 1, 0],
-              }}
-              transition={isStatic ? {} : {
-                duration: 2.5 + index * 0.3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <img
-                src={card.src}
-                alt=""
-                className={`${sizeClasses[size]} object-cover rounded-md shadow-lg opacity-60`}
-                style={{
-                  boxShadow: currentScheme.glow,
-                  filter: currentScheme.filter,
-                }}
-              />
-              {!isStatic && (
-                <motion.div
-                  className="absolute inset-0 rounded-md"
-                  animate={{
-                    boxShadow: currentScheme.glowPulse,
+            {/* Animación especial para La Emperatriz (carta del medio cuando showEmpress=true) */}
+            {index === 1 && showEmpress ? (
+              <motion.div
+                className="relative group cursor-pointer"
+                whileHover={{ scale: 1.15 }}
+                transition={{ duration: 0.4 }}
+              >
+                <motion.img
+                  src={card.src}
+                  alt="La Emperatriz"
+                  className={`${sizeClasses[size]} object-cover rounded-md shadow-lg`}
+                  whileHover={{
+                    y: [-2, 2, -2],
+                    rotate: [0, 2, -2, 0],
                   }}
                   transition={{
-                    duration: 2,
+                    duration: 0.6,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
+                  style={{
+                    boxShadow: currentScheme.glow,
+                    filter: currentScheme.filter,
+                  }}
                 />
-              )}
-            </motion.div>
+                {/* Resplandor extra en hover */}
+                <motion.div
+                  className="absolute inset-0 rounded-md bg-gradient-to-b from-accent/30 to-transparent opacity-0 group-hover:opacity-100"
+                  transition={{ duration: 0.3 }}
+                />
+                {/* Partículas doradas al hacer hover */}
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                >
+                  {[...Array(8)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-1 h-1 bg-accent rounded-full"
+                      style={{
+                        top: `${20 + i * 10}%`,
+                        left: `${10 + (i % 3) * 30}%`,
+                      }}
+                      animate={{
+                        y: [0, -20, 0],
+                        opacity: [0, 1, 0],
+                        scale: [0, 1.5, 0],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                      }}
+                    />
+                  ))}
+                </motion.div>
+              </motion.div>
+            ) : (
+              <motion.div
+                animate={isStatic ? {} : {
+                  y: [0, -8, 0],
+                  rotate: [0, index === 1 ? 1 : index === 0 ? -1 : 1, 0],
+                }}
+                transition={isStatic ? {} : {
+                  duration: 2.5 + index * 0.3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <img
+                  src={card.src}
+                  alt=""
+                  className={`${sizeClasses[size]} object-cover rounded-md shadow-lg opacity-60`}
+                  style={{
+                    boxShadow: currentScheme.glow,
+                    filter: currentScheme.filter,
+                  }}
+                />
+                {!isStatic && (
+                  <motion.div
+                    className="absolute inset-0 rounded-md"
+                    animate={{
+                      boxShadow: currentScheme.glowPulse,
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                )}
+              </motion.div>
+            )}
           </motion.div>
         ))}
       </div>
