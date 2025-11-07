@@ -12,6 +12,7 @@ import SaturdayTimePicker from "@/components/SaturdayTimePicker";
 
 const BookingForm = () => {
   const { toast } = useToast();
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,7 +21,7 @@ const BookingForm = () => {
     selectedTime: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Basic validation
@@ -53,20 +54,54 @@ const BookingForm = () => {
 
     const appointmentDateTime = `${format(formData.selectedDate, "EEEE d 'de' MMMM", { locale: es })} a las ${formData.selectedTime}`;
 
-    // Here you would integrate with Stripe
-    toast({
-      title: "¡Reserva recibida! ✨",
-      description: `Te contactaremos pronto para confirmar tu sesión del ${appointmentDateTime}`,
-    });
+    try {
+      setIsProcessingPayment(true);
 
-    // Reset form
-    setFormData({ 
-      name: "", 
-      email: "", 
-      sessionType: "", 
-      selectedDate: null, 
-      selectedTime: "" 
-    });
+      // Determinar el price_id según el tipo de sesión
+      // IMPORTANTE: Reemplaza estos IDs con los reales de tu cuenta de Stripe
+      const priceId = formData.sessionType === "30-min" 
+        ? "price_30min_stripe_id"  // Reemplazar con el ID real de Stripe
+        : "price_50min_stripe_id"; // Reemplazar con el ID real de Stripe
+
+      // Llamar al edge function para crear Stripe Checkout Session
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priceId: priceId,
+          customerEmail: formData.email,
+          customerName: formData.name,
+          metadata: {
+            sessionType: formData.sessionType,
+            appointmentDate: format(formData.selectedDate, "yyyy-MM-dd"),
+            appointmentTime: formData.selectedTime,
+            appointmentDateTime: appointmentDateTime,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear la sesión de pago');
+      }
+
+      const { url } = await response.json();
+
+      if (url) {
+        // Redirigir a Stripe Checkout
+        window.location.href = url;
+      }
+
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      toast({
+        title: "Error en el pago",
+        description: "No pudimos procesar tu reserva. Por favor intenta de nuevo.",
+        variant: "destructive",
+      });
+      setIsProcessingPayment(false);
+    }
   };
 
   const sessionOptions = [
@@ -202,10 +237,26 @@ const BookingForm = () => {
               <Button
                 type="submit"
                 size="lg"
-                className="w-full bg-gradient-to-r from-primary via-secondary to-primary hover:shadow-[var(--glow-gold)] transition-all duration-300 hover:scale-105 text-lg"
+                disabled={isProcessingPayment}
+                className="w-full bg-gradient-to-r from-primary via-secondary to-primary hover:shadow-[var(--glow-gold)] transition-all duration-300 hover:scale-105 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Sparkles className="mr-2 w-5 h-5" />
-                Agendar cita
+                {isProcessingPayment ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="mr-2"
+                    >
+                      <Sparkles className="w-5 h-5" />
+                    </motion.div>
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 w-5 h-5" />
+                    Reservar y Pagar
+                  </>
+                )}
               </Button>
 
               <p className="text-xs text-muted-foreground text-center font-body">
