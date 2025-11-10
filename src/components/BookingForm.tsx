@@ -58,10 +58,9 @@ const BookingForm = () => {
       setIsProcessingPayment(true);
 
       // Determinar el price_id según el tipo de sesión
-      // IMPORTANTE: Reemplaza estos IDs con los reales de tu cuenta de Stripe
       const priceId = formData.sessionType === "30-min" 
-        ? "price_30min_stripe_id"  // Reemplazar con el ID real de Stripe
-        : "price_50min_stripe_id"; // Reemplazar con el ID real de Stripe
+        ? "price_1SRzQQJCWF8o04WEPOANsZiR"  // 30 minutos - 40€
+        : "price_1SRzQiJCWF8o04WEmYpU7vzO"; // 50 minutos - 50€
 
       // Llamar al edge function para crear Stripe Checkout Session
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
