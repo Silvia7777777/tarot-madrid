@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import SaturdayTimePicker from "@/components/SaturdayTimePicker";
+import { supabase } from "@/integrations/supabase/client";
 
 const BookingForm = () => {
   const { toast } = useToast();
@@ -63,12 +64,8 @@ const BookingForm = () => {
         : "price_1SRzQiJCWF8o04WEmYpU7vzO"; // 50 minutos - 50€
 
       // Llamar al edge function para crear Stripe Checkout Session
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
           priceId: priceId,
           customerEmail: formData.email,
           customerName: formData.name,
@@ -78,18 +75,14 @@ const BookingForm = () => {
             appointmentTime: formData.selectedTime,
             appointmentDateTime: appointmentDateTime,
           },
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Error al crear la sesión de pago');
-      }
+      if (error) throw error;
 
-      const { url } = await response.json();
-
-      if (url) {
+      if (data?.url) {
         // Redirigir a Stripe Checkout
-        window.location.href = url;
+        window.location.href = data.url;
       }
 
     } catch (error) {
