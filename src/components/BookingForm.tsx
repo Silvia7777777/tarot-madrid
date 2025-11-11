@@ -60,8 +60,8 @@ const BookingForm = () => {
 
       // Determinar el price_id según el tipo de sesión
       const priceId = formData.sessionType === "30-min" 
-        ? "price_1SRzQQJCWF8o04WEPOANsZiR"  // 30 minutos - 40€
-        : "price_1SRzQiJCWF8o04WEmYpU7vzO"; // 50 minutos - 50€
+        ? "price_1SSOCaJSj0tadVn0E97PdmWC"  // 30 minutos - 40€
+        : "price_1SSOEpJSj0tadVn0MVe31wCy"; // 50 minutos - 50€
 
       // Llamar al edge function para crear Stripe Checkout Session
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
