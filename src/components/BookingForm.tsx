@@ -63,6 +63,8 @@ const BookingForm = () => {
         ? "price_1SSOCaJSj0tadVn0E97PdmWC"  // 30 minutos - 40€
         : "price_1SSOEpJSj0tadVn0MVe31wCy"; // 50 minutos - 50€
 
+      console.log('Creating checkout session with:', { priceId, email: formData.email, name: formData.name });
+
       // Llamar al edge function para crear Stripe Checkout Session
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: {
@@ -78,12 +80,21 @@ const BookingForm = () => {
         },
       });
 
-      if (error) throw error;
+      console.log('Checkout session response:', { data, error });
 
-      if (data?.url) {
-        // Redirigir a Stripe Checkout
-        window.location.href = data.url;
+      if (error) {
+        console.error('Error from edge function:', error);
+        throw error;
       }
+
+      if (!data?.url) {
+        throw new Error('No se recibió URL de Stripe');
+      }
+
+      console.log('Redirecting to Stripe:', data.url);
+      
+      // Redirigir a Stripe Checkout inmediatamente
+      window.location.href = data.url;
 
     } catch (error) {
       console.error('Error creating checkout session:', error);
