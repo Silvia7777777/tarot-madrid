@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Youtube, Instagram, MessageCircle, Sparkles } from "lucide-react";
+import { SOCIAL_LINKS } from "@/constants/socialLinks";
 
 const Footer = () => {
   return (
@@ -23,34 +24,34 @@ const Footer = () => {
 
           <div className="flex items-center justify-center gap-6">
             <motion.a
-              href="https://youtube.com/@Tarot_Madrid"
+              href={SOCIAL_LINKS.youtube.url}
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.2, rotate: 5 }}
               className="text-secondary hover:text-accent transition-colors"
-              aria-label="YouTube"
+              aria-label={SOCIAL_LINKS.youtube.ariaLabel}
             >
               <Youtube className="w-6 h-6" />
             </motion.a>
 
             <motion.a
-              href="https://instagram.com/tarot_madrid"
+              href={SOCIAL_LINKS.instagram.url}
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.2, rotate: -5 }}
               className="text-secondary hover:text-accent transition-colors"
-              aria-label="Instagram"
+              aria-label={SOCIAL_LINKS.instagram.ariaLabel}
             >
               <Instagram className="w-6 h-6" />
             </motion.a>
 
             <motion.a
-              href="https://wa.me/34XXXXXXXXX"
+              href={SOCIAL_LINKS.whatsapp.url}
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.2, rotate: 5 }}
               className="text-secondary hover:text-accent transition-colors"
-              aria-label="WhatsApp"
+              aria-label={SOCIAL_LINKS.whatsapp.ariaLabel}
             >
               <MessageCircle className="w-6 h-6" />
             </motion.a>
