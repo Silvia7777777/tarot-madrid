@@ -4,9 +4,10 @@ import heroCard1 from "@/assets/hero-tarot-1.png";
 import heroCard2 from "@/assets/hero-tarot-2.png";
 import heroCard3 from "@/assets/hero-tarot-3.png";
 import legacyEmpress from "@/assets/legacy-empress.png";
+import { ANIMATION_SCHEMES, type AnimationVariant } from "@/constants/animationSchemes";
 
 interface FloatingCardsDecorProps {
-  variant?: "default" | "love" | "money" | "static";
+  variant?: AnimationVariant;
   size?: "small" | "medium" | "large" | "xlarge";
   spacing?: "none" | "normal";
   showEmpress?: boolean;
@@ -46,46 +47,7 @@ const FloatingCardsDecor = ({
     large: "gap-4 md:gap-8"
   };
 
-  const colorSchemes = {
-    default: {
-      filter: "brightness(1.1) saturate(1.2)",
-      glow: "0 0 20px rgba(255, 215, 128, 0.2), 0 5px 20px rgba(0, 0, 0, 0.3)",
-      glowPulse: [
-        "0 0 10px rgba(255, 215, 128, 0.1)",
-        "0 0 25px rgba(255, 215, 128, 0.3)",
-        "0 0 10px rgba(255, 215, 128, 0.1)",
-      ]
-    },
-    love: {
-      filter: "sepia(1) saturate(3) hue-rotate(250deg) brightness(0.6)",
-      glow: "0 0 20px rgba(168, 85, 247, 0.4), 0 5px 20px rgba(0, 0, 0, 0.3)",
-      glowPulse: [
-        "0 0 10px rgba(168, 85, 247, 0.2)",
-        "0 0 25px rgba(168, 85, 247, 0.5)",
-        "0 0 10px rgba(168, 85, 247, 0.2)",
-      ]
-    },
-    money: {
-      filter: "sepia(1) saturate(2) hue-rotate(30deg) brightness(1.3)",
-      glow: "0 0 20px rgba(255, 215, 0, 0.4), 0 5px 20px rgba(0, 0, 0, 0.3)",
-      glowPulse: [
-        "0 0 10px rgba(255, 215, 0, 0.2)",
-        "0 0 25px rgba(255, 215, 0, 0.5)",
-        "0 0 10px rgba(255, 215, 0, 0.2)",
-      ]
-    },
-    static: {
-      filter: "brightness(1.1) saturate(1.2)",
-      glow: "0 0 20px rgba(255, 215, 128, 0.2), 0 5px 20px rgba(0, 0, 0, 0.3)",
-      glowPulse: [
-        "0 0 10px rgba(255, 215, 128, 0.1)",
-        "0 0 25px rgba(255, 215, 128, 0.3)",
-        "0 0 10px rgba(255, 215, 128, 0.1)",
-      ]
-    }
-  };
-
-  const cards = showEmpress 
+  const cards = showEmpress
     ? [
         { src: heroCard1, delay: 0.2 },
         { src: legacyEmpress, delay: 0.4 },
@@ -97,7 +59,7 @@ const FloatingCardsDecor = ({
         { src: heroCard3, delay: 0.6 },
       ];
 
-  const currentScheme = colorSchemes[variant];
+  const currentScheme = ANIMATION_SCHEMES[variant];
   const isStatic = variant === "static";
 
   return (

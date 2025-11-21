@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Youtube, Moon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SOCIAL_LINKS } from "@/constants/socialLinks";
 
 const About = () => {
   return (
@@ -70,7 +71,7 @@ const About = () => {
                 size="lg"
                 variant="outline"
                 className="border-accent text-accent hover:bg-accent/10 hover:shadow-[var(--glow-gold)] transition-all duration-300"
-                onClick={() => window.open("https://youtube.com/@Tarot_Madrid", "_blank")}
+                onClick={() => window.open(SOCIAL_LINKS.youtube.url, "_blank")}
               >
                 <Youtube className="mr-2 w-5 h-5" />
                 Visita mi canal de YouTube

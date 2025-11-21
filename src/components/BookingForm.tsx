@@ -1,128 +1,31 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, User, Sparkles, Clock, CheckCircle } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { Mail, User, Sparkles, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
 import SaturdayTimePicker from "@/components/SaturdayTimePicker";
-import { supabase } from "@/integrations/supabase/client";
+import { SESSION_OPTIONS } from "@/constants/sessionOptions";
+import { useBookingForm } from "@/hooks/useBookingForm";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 
 const BookingForm = () => {
-  const { toast } = useToast();
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    sessionType: "",
-    selectedDate: null as Date | null,
-    selectedTime: "",
-  });
+  const { formData, updateFormData, validateForm } = useBookingForm();
+  const { createCheckoutSession, isProcessing } = useStripeCheckout();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
-    if (!formData.name || !formData.email) {
-      toast({
-        title: "Campos requeridos",
-        description: "Por favor completa tu nombre y email",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!validateForm()) return;
 
-    if (!formData.sessionType) {
-      toast({
-        title: "Selecciona una sesión",
-        description: "Elige el tipo de lectura que deseas",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!formData.selectedDate || !formData.selectedTime) {
-      toast({
-        title: "Fecha requerida",
-        description: "Por favor selecciona un sábado y una hora disponible",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const appointmentDateTime = `${format(formData.selectedDate, "EEEE d 'de' MMMM", { locale: es })} a las ${formData.selectedTime}`;
-
-    try {
-      setIsProcessingPayment(true);
-
-      // Determinar el price_id según el tipo de sesión
-      const priceId = formData.sessionType === "30-min" 
-        ? "price_1SSOCaJSj0tadVn0E97PdmWC"  // 30 minutos - 40€
-        : "price_1SSOEpJSj0tadVn0MVe31wCy"; // 50 minutos - 50€
-
-      console.log('Creating checkout session with:', { priceId, email: formData.email, name: formData.name });
-
-      // Llamar al edge function para crear Stripe Checkout Session
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: {
-          priceId: priceId,
-          customerEmail: formData.email,
-          customerName: formData.name,
-          metadata: {
-            sessionType: formData.sessionType,
-            appointmentDate: format(formData.selectedDate, "yyyy-MM-dd"),
-            appointmentTime: formData.selectedTime,
-            appointmentDateTime: appointmentDateTime,
-          },
-        },
-      });
-
-      console.log('Checkout session response:', { data, error });
-
-      if (error) {
-        console.error('Error from edge function:', error);
-        throw error;
-      }
-
-      if (!data?.url) {
-        throw new Error('No se recibió URL de Stripe');
-      }
-
-      console.log('Redirecting to Stripe:', data.url);
-      
-      // Redirigir a Stripe Checkout inmediatamente
-      window.location.href = data.url;
-
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      toast({
-        title: "Error en el pago",
-        description: "No pudimos procesar tu reserva. Por favor intenta de nuevo.",
-        variant: "destructive",
-      });
-      setIsProcessingPayment(false);
-    }
+    await createCheckoutSession({
+      name: formData.name,
+      email: formData.email,
+      sessionType: formData.sessionType,
+      selectedDate: formData.selectedDate!,
+      selectedTime: formData.selectedTime,
+    });
   };
-
-  const sessionOptions = [
-    {
-      id: "30-min",
-      title: "30 Minutos",
-      description: "Lectura enfocada",
-      price: "40€",
-      icon: Clock,
-    },
-    {
-      id: "50-min",
-      title: "50 Minutos",
-      description: "Lectura profunda",
-      price: "50€",
-      icon: Clock,
-    },
-  ];
 
   return (
     <section id="booking" className="py-20 px-4 relative overflow-hidden">
@@ -163,7 +66,7 @@ const BookingForm = () => {
                   type="text"
                   placeholder="Tu nombre"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => updateFormData("name", e.target.value)}
                   className="bg-background/50 border-border/50 focus:border-accent transition-colors"
                 />
               </div>
@@ -178,7 +81,7 @@ const BookingForm = () => {
                   type="email"
                   placeholder="tu@email.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => updateFormData("email", e.target.value)}
                   className="bg-background/50 border-border/50 focus:border-accent transition-colors"
                 />
               </div>
@@ -188,7 +91,7 @@ const BookingForm = () => {
                   Tipo de sesión
                 </Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {sessionOptions.map((session) => (
+                  {SESSION_OPTIONS.map((session) => (
                     <motion.div
                       key={session.id}
                       whileHover={{ scale: 1.02 }}
@@ -198,7 +101,7 @@ const BookingForm = () => {
                           ? "border-accent bg-accent/10 shadow-[var(--glow-gold)]"
                           : "border-border/50 hover:border-accent/50 hover:bg-accent/5"
                       }`}
-                      onClick={() => setFormData({ ...formData, sessionType: session.id })}
+                      onClick={() => updateFormData("sessionType", session.id)}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -233,17 +136,17 @@ const BookingForm = () => {
               <SaturdayTimePicker
                 selectedDate={formData.selectedDate}
                 selectedTime={formData.selectedTime}
-                onDateChange={(date) => setFormData({ ...formData, selectedDate: date || null })}
-                onTimeChange={(time) => setFormData({ ...formData, selectedTime: time })}
+                onDateChange={(date) => updateFormData("selectedDate", date || null)}
+                onTimeChange={(time) => updateFormData("selectedTime", time)}
               />
 
               <Button
                 type="submit"
                 size="lg"
-                disabled={isProcessingPayment}
+                disabled={isProcessing}
                 className="w-full bg-gradient-to-r from-primary via-secondary to-primary hover:shadow-[var(--glow-gold)] transition-all duration-300 hover:scale-105 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isProcessingPayment ? (
+                {isProcessing ? (
                   <>
                     <motion.div
                       animate={{ rotate: 360 }}
