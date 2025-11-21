@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { Youtube, Moon, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Moon, Sparkles } from "lucide-react";
 import { SOCIAL_LINKS } from "@/constants/socialLinks";
+import YouTubeChannelPreview from "@/components/sections/YouTubeChannelPreview";
 
 const About = () => {
   return (
@@ -60,23 +60,9 @@ const About = () => {
               Ya sea amor, abundancia, propósito o sanación, el universo tiene un mensaje para ti.
             </p>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="pt-8"
-            >
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-accent text-accent hover:bg-accent/10 hover:shadow-[var(--glow-gold)] transition-all duration-300"
-                onClick={() => window.open(SOCIAL_LINKS.youtube.url, "_blank")}
-              >
-                <Youtube className="mr-2 w-5 h-5" />
-                Visita mi canal de YouTube
-              </Button>
-            </motion.div>
+            <div className="pt-8">
+              <YouTubeChannelPreview />
+            </div>
 
             <motion.div
               initial={{ opacity: 0 }}
