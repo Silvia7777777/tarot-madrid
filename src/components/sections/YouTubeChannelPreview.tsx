@@ -23,21 +23,6 @@ const YouTubeChannelPreview = () => {
       transition={{ duration: 0.8, delay: 0.3 }}
       className="max-w-4xl mx-auto"
     >
-      {/* YouTube Preview Embed */}
-      <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl border-2 border-accent/20">
-        <iframe
-          width="100%"
-          height="400"
-          src="https://www.youtube.com/embed?listType=user_uploads&list=Tarot_Madrid"
-          title="Canal de YouTube - Tarot Madrid"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          loading="lazy"
-          className="w-full h-[250px] md:h-[350px] lg:h-[400px]"
-        />
-      </div>
-
       {/* Botón con Destellos */}
       <div className="relative inline-block w-full flex justify-center">
         {/* Destellos Flotantes Animados */}
